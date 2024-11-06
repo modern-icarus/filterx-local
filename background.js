@@ -73,9 +73,9 @@ async function detectLanguage(sentence) {
 
         // Check if any Filipino language label has a score above the threshold
         const isFilipinoLanguage = predictions.some(pred => 
-            (pred.label === "tgl_Latn" && pred.score > 0.05) || 
-            (pred.label === "ceb_Latn" && pred.score > 0.05) || 
-            (pred.label === "war_Latn" && pred.score > 0.05)
+            (pred.label === "tgl_Latn" && pred.score > 0.5) || 
+            (pred.label === "ceb_Latn" && pred.score > 0.5) || 
+            (pred.label === "war_Latn" && pred.score > 0.5)
         );
 
         // Check if English is detected with a high enough score
