@@ -25,17 +25,18 @@ document.addEventListener("DOMContentLoaded", function() {
     //     return;
     // }
 
+    let notifCount = 0;
     // Event listener for opening the notification card
     document.getElementById("notifBtn").addEventListener("click", function() {
         const notifCard = document.getElementById("notifCard");
         const isCardVisible = notifCard.style.display === "block";
         notifCard.style.display = isCardVisible ? "none" : "block";
 
-        // Only update the timeAgo when the card is shown (reopened)
         if (!isCardVisible) {
             updateNotificationsTimeAgo();
+            notifCount = 0; // Reset count to 0 when the notification card is opened
             const notifBadge = document.querySelector(".nav__notif .notif__badge");
-            notifBadge.innerHTML = "0"; // Reset the badge count to 0
+            notifBadge.innerHTML = notifCount.toString(); // Update badge to reflect reset
         }
     });
 
@@ -48,34 +49,29 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-          // Update badge and notification list upon receiving messages
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.action === "updateBadge") {
+            notifCount += 1; // Increment from 0 after reset
+    
             const notifBadge = document.querySelector(".nav__notif .notif__badge");
-            notifBadge.innerHTML = request.count > 99 ? "99+" : request.count.toString();
-
+            notifBadge.innerHTML = notifCount > 99 ? "99+" : notifCount.toString();
+    
+            // Add new notification to the list as before
             const notifList = document.querySelector("#notifCard .list-group");
             const defaultMessage = document.getElementById("defaultMessage");
-
-            // Hide the default message if a flagged sentence is added
+    
             if (defaultMessage) {
                 defaultMessage.style.display = "none";
             }
-
-            // Ensure current timestamp is stored properly
-            const timestamp = Date.now(); // Save the current timestamp
-            const timeAgo = getTimeDifference(timestamp); // Calculate timeAgo based on the current time
-
-            // Create new notification item
+    
+            const timestamp = Date.now();
+            const timeAgo = getTimeDifference(timestamp);
+    
             const newNotifItem = document.createElement("li");
             newNotifItem.className = "list-group-item";
-            newNotifItem.setAttribute('data-timestamp', timestamp); // Store the timestamp for later updates
-            newNotifItem.innerHTML = `<em>${request.flaggedSentence}</em> was flagged as hate speech • ${timeAgo}`; // Fix display
-
+            newNotifItem.setAttribute('data-timestamp', timestamp);
+            newNotifItem.innerHTML = `<em>${request.flaggedSentence}</em> was flagged as hate speech • ${timeAgo}`;
             notifList.appendChild(newNotifItem);
-
-            // Log to check if the timestamp is being set correctly
-            console.log("Notification created with timestamp: ", timestamp);
         }
     });
 

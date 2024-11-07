@@ -9,6 +9,7 @@
   --first-color: #FFA116;
   --second-color: #423726;
   --blue-color: rgb(10, 132, 255);
+  --green-color: rgb(44, 187, 93);
   --sec-blue-color: rgb(10, 132, 255, 0.1);
   --purple-color: rgb(191, 90, 242);
   --first-color-alt: hsl(var(--hue), var(--sat), 36%);
@@ -149,6 +150,11 @@ img {
   background-color: var(--container-color) !important;
 }
 
+.fourth__accordion__title{
+  color: var(--green-color) !important;
+  background-color: var(--container-color) !important;
+}
+
 .accordion-header{
   border-color: var(--first-color) !important;
 }
@@ -185,6 +191,11 @@ img {
 
 .third__accordion__title:focus {
   box-shadow: 0 0 0 0.1rem var(--blue-color) !important; 
+  outline: none;
+}
+
+.fourth__accordion__title:focus{
+  box-shadow: 0 0 0 0.1rem var(--green-color) !important; 
   outline: none;
 }
 
