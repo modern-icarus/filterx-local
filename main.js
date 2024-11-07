@@ -464,6 +464,7 @@ function showLoadingModal(modalContent) {
     `;
 }
 
+
 // Helper function to handle the scan response
 function handleScanResponse(response, modalContent, hateSpeechMap) {
     console.log("Response object:", response);
@@ -472,7 +473,6 @@ function handleScanResponse(response, modalContent, hateSpeechMap) {
     const detectedHateSpeeches = response.detectedHateSpeeches.englishHateCount + response.detectedHateSpeeches.tagalogHateCount;
     const englishHateCount = response.detectedHateSpeeches.englishHateCount || 0;
     const tagalogHateCount = response.detectedHateSpeeches.tagalogHateCount || 0;
-    
 
     if (scanResult === "coldStart") {
         modalContent.innerHTML = `
@@ -511,7 +511,7 @@ function handleScanResponse(response, modalContent, hateSpeechMap) {
                 View Details
             </button>
             <div class="collapse mt-3 mb-3" id="collapseSuccess">
-                <div class="card card-body" style="background-color: #423726; color: #AEAAAA max-height: 20vh; overflow-y: auto;">
+                <div class="card card-body scrollable-details" style="background-color: #423726; color: #AEAAAA max-height: 20vh; overflow-y: auto;">
                     <p>English Hate Speech: ${englishHateCount}</p>
                     <p>Tagalog Hate Speech: ${tagalogHateCount}</p>
                     <p>Hate Speech Details:</p>

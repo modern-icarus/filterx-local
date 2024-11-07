@@ -208,6 +208,11 @@ img {
   border-color: var(--purple-color) !important;
 }
 
+.scrollable-details {
+  max-height: 20vh; /* Adjust as necessary */
+  overflow-y: auto;
+}
+
 /* HEADER */
 .header {
   position: fixed;
