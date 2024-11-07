@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const notifBadge = document.querySelector(".nav__notif .notif__badge");
             notifBadge.innerHTML = notifCount > 99 ? "99+" : notifCount.toString();
     
-            // Add new notification to the list as before
+            // Add new notification to the top of the list
             const notifList = document.querySelector("#notifCard .list-group");
             const defaultMessage = document.getElementById("defaultMessage");
     
@@ -71,9 +71,12 @@ document.addEventListener("DOMContentLoaded", function() {
             newNotifItem.className = "list-group-item";
             newNotifItem.setAttribute('data-timestamp', timestamp);
             newNotifItem.innerHTML = `<em>${request.flaggedSentence}</em> was flagged as hate speech • ${timeAgo}`;
-            notifList.appendChild(newNotifItem);
+    
+            // Prepend the new notification to the top
+            notifList.prepend(newNotifItem);
         }
     });
+    
 
     // Function to update the timeAgo for each notification when the card is opened
     function updateNotificationsTimeAgo() {

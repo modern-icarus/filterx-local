@@ -78,7 +78,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function toggleCensorshipRealtime(enable) {
-  const elements = document.querySelectorAll('div[dir="auto"], span[dir="auto"]');
+  const elements = document.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]');
 
   elements.forEach(el => {
     if(!enable) {
@@ -97,7 +97,7 @@ function toggleCensorshipRealtime(enable) {
 }
 
 function toggleCensorship(hateSpeechMap, enable = true) {
-  const elements = document.querySelectorAll('div[dir="auto"], span[dir="auto"]');
+  const elements = document.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]');
 
   elements.forEach(el => {
     const textContent = el.innerText.trim().toLowerCase();
@@ -136,7 +136,7 @@ function toggleCensorship(hateSpeechMap, enable = true) {
 }
 
 function toggleHighlighted(hateSpeechMap, enable) {
-  const elements = document.querySelectorAll('div[dir="auto"], span[dir="auto"]');
+  const elements = document.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]');
 
   elements.forEach(el => {
     const textContent = el.innerText.trim().toLowerCase();
@@ -216,7 +216,7 @@ function isExcludedSentence(sentence) {
 
 // Extract and process valid sentences from the page
 function extractValidSentences() {
-  const postElements = document.querySelectorAll('div[dir="auto"], span[dir="auto"]');
+  const postElements = document.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]');
   const uniqueSentences = new Set();
 
   return Array.from(postElements)
@@ -255,7 +255,7 @@ function startObserver() {
         mutation.addedNodes.forEach(node => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             processNodeText(node);
-            node.querySelectorAll('div[dir="auto"], span[dir="auto"]').forEach(childNode => {
+            node.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]').forEach(childNode => {
               processNodeText(childNode);
             });
           }
@@ -270,7 +270,7 @@ function startObserver() {
 }
 
 function processNodeText(node) {
-  const relevantElements = node.querySelectorAll('div[dir="auto"], span[dir="auto"]');
+  const relevantElements = node.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]');
 
   relevantElements.forEach(el => {
       const textContent = el.innerText.trim();
