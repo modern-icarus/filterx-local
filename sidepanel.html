@@ -46,19 +46,13 @@
                             </a>
                         </li>
 
-                        <!-- <li class="nav__item">
-                            <a href="#logs" class="nav__link">
-                                <i class='bx bx-history nav__icon'></i>
-                                <span class="nav__name"></span>
-                            </a>
-                        </li> -->
-
                         <li class="nav__item">
                             <a href="#about" class="nav__link">
                                 <i class='bx bx-info-circle nav__icon'></i>
                                 <span class="nav__name">About</span>
                             </a>
                         </li>
+
                     </ul>
                 </div>
 
@@ -104,10 +98,85 @@
                 <h1 class="display-4 fw-bolder">Welcome to FilterX</h1>
                 <p class="lead landing__desc fw-bold">Real-Time Hate Speech Detection and Filtering.</p>
                 <div class="d-flex justify-content-center mt-4">
-                    <a href="#detect" class="btn btn-primary btn-lg mx-2 landing__button">Get Started</a>
+                    <a href="" class="btn btn-primary btn-lg mx-2 landing__button" data-bs-toggle="modal" data-bs-target="#getStartedModal">Get Started</a>
                 </div>
             </div>
         </section>
+
+        <!-- Get Started Modal -->
+        <div class="modal fade" id="getStartedModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content gsModal">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Terms & Conditions</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-justify" style="max-height: 30vh !important; overflow-y: auto !important;">
+                        <p>FilterX is a Chrome extension designed to enhance users' browsing experience by detecting and filtering hate speech in real-time.
+                            By using FilterX, you agree to the following terms and conditions. Please read them carefully.
+                        </p>
+
+                        <p><strong>1. Acceptance of Terms</strong></p>
+                        <p> By installing or using FilterX, you agree to comply with and be bound by these Terms and Conditions. If you do not agree with any part of these terms, 
+                            you may not use the extension.
+                        </p>  
+                            
+                        <p><strong>2. License and Use</strong></p>
+                        <p> FilterX grants you a limited, non-exclusive, non-transferable, and revocable license to use the extension solely for its intended purpose: 
+                            detecting and filtering hate speech on websites you browse.
+                        </p>
+                            
+                            <p>You agree not to:</p>
+                            <p>•Modify, distribute, or reproduce the extension or any of its components.</p>
+                            <p>•Use the extension to harass, abuse, or harm any individual or entity.</p>
+                            <p>•Reverse-engineer, decompile, or attempt to extract the source code of the extension.</p>
+                            
+                        <p><strong>3. Privacy and Data Handling</strong></p>
+                            <p>FilterX operates within your browser to scan and detect instances of hate speech. No personal or browsing data is stored or transmitted 
+                                to external servers unless explicitly stated and consented to.
+                            </p>
+                            
+                            <p>FilterX only processes data locally within your browser. However, in specific modes where model inference is performed on remote servers 
+                                (e.g., using a Serverless API), user text inputs may be briefly processed remotely. FilterX does not share or sell your data to third parties.
+                            </p>
+                            
+                        <p><strong>4. Accuracy and Limitations</strong></p>
+                            <p>FilterX uses machine learning models to identify potential hate speech. However, this detection is not flawless, and some content may be flagged 
+                                inaccurately as hate speech or may go undetected.
+                            </p>
+                            
+                            <p>You acknowledge and accept that:</p>
+                            
+                            <p>•FilterX may not detect all instances of hate speech.</p>
+                            <p>•The extension may flag benign content incorrectly.</p>
+                            <p>•FilterX is intended solely to support users in reducing exposure to hate speech and should not be relied upon as an absolute measure of content moderation.
+                            </p>
+                            
+                        <p><strong>5. Disclaimer of Warranties</strong></p>
+                            <p>FilterX is provided "as is" and "as available," without any warranty of any kind, either express or implied. We do not guarantee that FilterX 
+                                will be error-free, secure, or available at all times.
+                            </p>
+                            
+                            <p>To the fullest extent permitted by law, FilterX disclaims all warranties, whether express or implied, including but not limited to implied 
+                                warranties of merchantability, fitness for a particular purpose, and non-infringement.
+                            </p>
+                            
+                        <p><strong>6. Limitation of Liability</strong></p>
+                            <p>Under no circumstances shall FilterX, its developers, or affiliates be liable for any indirect, incidental, special, consequential, or 
+                                punitive damages, or any loss of profits or revenue, arising out of your use of or inability to use FilterX.</p>
+                            
+                        <p><strong>7. User Responsibilities</strong></p>
+                            <p>You agree to use FilterX responsibly and in compliance with all applicable laws. You may not use the extension in any way that could harm 
+                                others, such as distributing flagged content maliciously or harassing individuals based on the content flagged by the extension.
+                            </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="acceptButton">Accept</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Decline</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <main>
             <!-- DETECT -->

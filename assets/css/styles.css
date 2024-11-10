@@ -64,6 +64,10 @@ a {
   text-decoration: none;
 }
 
+.text-justify {
+  text-align: justify;
+}
+
 img {
   max-width: 100%;
   height: auto;
@@ -392,13 +396,23 @@ canvas{
   border-radius: 2% !important;
 }
 
+.disabled-link {
+  color: gray;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 
 /*Active link*/
 .active-link {
   position: relative;
   color: var(--first-color);
   transition: .3s;
-} 
+}
+
+.gsModal{
+  background-color: var(--container-color) !important;
+}
 
 .modal-title{
   color: var(--first-color); 

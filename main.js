@@ -25,6 +25,43 @@ document.addEventListener("DOMContentLoaded", function() {
     //     return;
     // }
 
+    const acceptButton = document.querySelector("#getStartedModal .modal-footer .btn-primary");
+    const interactiveElements = document.querySelectorAll("#scanToggle, #scanPage, .mode-switch"); // Add other buttons as needed
+    const navLinks = document.querySelectorAll(".nav__item .nav__link[href='#detect'], .nav__item .nav__link[href='#modes'], .nav__item .nav__link[href='#dashboard'], .nav__item .nav__link[href='#about']");
+
+    // Initially disable all interactive elements and navigation links
+    interactiveElements.forEach((element) => element.disabled = true);
+    navLinks.forEach((link) => {
+        link.classList.add("disabled-link"); // Custom class to make the links appear disabled
+        link.style.pointerEvents = "none"; // Prevent clicking
+    });
+
+    // Enable elements and redirect on 'Accept' button click
+    acceptButton.addEventListener("click", () => {
+        // Enable interactive elements
+        interactiveElements.forEach((element) => element.disabled = false);
+
+        // Enable navigation links
+        navLinks.forEach((link) => {
+            link.classList.remove("disabled-link");
+            link.style.pointerEvents = "auto";
+        });
+
+        // document.getElementById("detect").scrollIntoView({ behavior: "smooth" });
+
+        // const modalInstance = bootstrap.Modal.getInstance(document.getElementById("getStartedModal"));
+        // modalInstance.hide();
+    });
+    document.getElementById("acceptButton").addEventListener("click", () => {
+        setTimeout(() => {
+            document.getElementById("detect").scrollIntoView({ behavior: "smooth" });
+        }, 300);
+        const modalInstance = bootstrap.Modal.getInstance(document.getElementById("getStartedModal"));
+        modalInstance.hide();
+    });
+    
+    
+
     let notifCount = 0;
     // Event listener for opening the notification card
     document.getElementById("notifBtn").addEventListener("click", function() {
