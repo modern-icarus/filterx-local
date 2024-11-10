@@ -28,6 +28,76 @@ function log(level, message, ...optionalParams) {
     }
 }
 
+// Global variable to store real-time toggle state
+let isRealTimeEnabled = false;
+
+// Function to set real-time toggle state and apply it to all open tabs
+function setRealTimeEnabled(enabled) {
+    isRealTimeEnabled = enabled;
+
+    // Apply real-time mode to all currently open tabs
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+            if (tab.url && !tab.url.startsWith("chrome://")) {  // Skip restricted URLs
+                chrome.tabs.sendMessage(tab.id, { action: "toggleObserver", enabled: isRealTimeEnabled }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.warn("Failed to send message to tab:", chrome.runtime.lastError.message);
+                    }
+                });
+            }
+        });
+    });
+}
+
+// Listen for new tabs and apply real-time mode if enabled
+chrome.tabs.onCreated.addListener((tab) => {
+    if (isRealTimeEnabled) {
+        // Check if the tab's URL is accessible
+        if (tab.url && !tab.url.startsWith("chrome://")) {
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ["content.js"]
+            }, () => {
+                // After injecting the content script, send the toggle message
+                chrome.tabs.sendMessage(tab.id, { action: "toggleObserver", enabled: true }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.warn("Failed to send message to new tab:", chrome.runtime.lastError.message);
+                    }
+                });
+            });
+        }
+    }
+});
+
+// Listen for updates to tabs (URL changes) and apply real-time mode if enabled
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    // Only proceed if the URL has fully loaded and is accessible
+    if (changeInfo.status === 'complete' && isRealTimeEnabled && tab.url && !tab.url.startsWith("chrome://")) {
+        // Inject content script and apply real-time detection
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ["content.js"]
+        }, () => {
+            chrome.tabs.sendMessage(tab.id, { action: "toggleObserver", enabled: true }, (response) => {
+                if (chrome.runtime.lastError) {
+                    console.warn("Failed to send message to updated tab:", chrome.runtime.lastError.message);
+                }
+            });
+        });
+    }
+});
+
+// Listen for toggle messages from the UI to update real-time mode
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "setRealTimeToggle") {
+        setRealTimeEnabled(message.enabled);
+        sendResponse({ status: "success" });
+    }
+});
+
+
+
+
 async function callAPI(url, sentence) {
     try {
         const response = await fetch(url, {

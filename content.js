@@ -57,16 +57,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.action === "toggleObserver") {
     if (request.enabled) {
-      console.log('Mutation Observer is now ON.');
-      startObserver();
+        startObserver();  // Start real-time detection
+        console.log("Real-time mode activated on this tab.");
     } else {
-      if (observer) {
-        observer.disconnect();
-        observer = null;
-        console.log('Mutation Observer is now OFF.');
-      }
+        if (observer) observer.disconnect();  // Stop real-time detection
+        console.log("Real-time mode deactivated on this tab.");
     }
-  }
+}
 
   if (request.action === "processSentence" && request.sentence) {
     
