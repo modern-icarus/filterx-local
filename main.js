@@ -130,8 +130,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 // Directly update the entire notification message with new timeAgo
                 item.innerHTML = `<div class="d-flex justify-content-between align-items-center">
-                                <span><em>"${sentence}"</em> was flagged as hate speech. • ${timeAgo}</span>
-                                <i class='bx bx-dots-horizontal-rounded fs-1 ms-1'></i>
+                                <span><em>"${sentence}"</em> was flagged as hate speech.</span>
+                                ${timeAgo}
                             </div>`;
 
                 // Log to check if the timeAgo is being calculated correctly
@@ -161,14 +161,28 @@ document.addEventListener("DOMContentLoaded", function() {
      
 
      // Listen for changes in mode selection
-    document.querySelectorAll('input[name="mode"]').forEach((input) => {
+     document.querySelectorAll('input[name="mode"]').forEach((input) => {
         input.addEventListener('change', (event) => {
             const selectedMode = event.target.value;
             console.log(`Mode selected: ${selectedMode}`);
-            chrome.runtime.sendMessage({ action: "setMode", mode: selectedMode });
+            chrome.runtime.sendMessage({ action: "setSelectMode", mode: selectedMode });
         });
     });
     
+    hideSwitch.addEventListener('click', () => {  
+        const toggleState = hideSwitch.classList.toggle('enabled');
+        chrome.runtime.sendMessage({ action: "setFilterType", filter: "filterCensorship" });
+    });
+    
+    highlightSwitch.addEventListener('click', () => {
+        const toggleState = highlightSwitch.classList.toggle('enabled');
+        chrome.runtime.sendMessage({ action: "setFilterType", filter: "filterHighlight" });
+    });
+    
+    uncensoredSwitch.addEventListener('click', () => {
+        const toggleState = uncensoredSwitch.classList.toggle('enabled');
+        chrome.runtime.sendMessage({ action: "setFilterType", filter: "filterRealTime" });
+    });
     
 
     // Event listener for Scan Page button

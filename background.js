@@ -28,8 +28,62 @@ function log(level, message, ...optionalParams) {
     }
 }
 
+// Inject content script into all open tabs when the extension loads
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+            // Skip restricted URLs like chrome:// pages
+            if (tab.url && !tab.url.startsWith("chrome://")) {
+                chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    files: ["content.js"]
+                }, () => {
+                    if (chrome.runtime.lastError) {
+                        console.warn(`Failed to inject content script into tab ${tab.id}: ${chrome.runtime.lastError.message}`);
+                    } else {
+                        console.log(`Content script injected into tab ${tab.id} (${tab.url})`);
+                    }
+                });
+            }
+        });
+    });
+});
+
 // Global variable to store real-time toggle state
 let isRealTimeEnabled = false;
+let currentSelectMode = 'moderate'; // Default mode
+let currentFilterType = 'filterRealTime'; // Default filter
+
+function setSelectMode(mode) {
+    currentSelectMode = mode;
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+            if (tab.url && !tab.url.startsWith("chrome://")) {
+                try {
+                    chrome.tabs.sendMessage(tab.id, { action: "setMode", mode: currentSelectMode });
+                } catch (error) {
+                    console.warn(`Failed to send setMode message to tab ${tab.id}:`, error);
+                }
+            }
+        });
+    });
+}
+
+function setFilterType(filter) {
+    currentFilterType = filter;
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+            if (tab.url && !tab.url.startsWith("chrome://")) {
+                try {
+                    chrome.tabs.sendMessage(tab.id, { action: "setFilterType", filter: currentFilterType });
+                } catch (error) {
+                    console.warn(`Failed to send setFilterType message to tab ${tab.id}:`, error);
+                }
+            }
+        });
+    });
+}
+
 
 // Function to set real-time toggle state and apply it to all open tabs
 function setRealTimeEnabled(enabled) {
@@ -359,6 +413,20 @@ async function processSentencesInLoop(sentences) {
 
     return results;
 }
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "setRealTimeToggle") {
+        setRealTimeEnabled(message.enabled);
+        sendResponse({ status: "success" });
+    } else if (message.action === "setSelectMode") {
+        setSelectMode(message.mode);
+        sendResponse({ status: "success" });
+    } else if (message.action === "setFilterType") {
+        setFilterType(message.filter);
+        sendResponse({ status: "success" });
+    }
+});
+
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

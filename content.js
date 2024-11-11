@@ -47,33 +47,52 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ sentences });
   }
 
-  if (request.action == "toggleCensorship") {
+  if (request.action === "toggleCensorship") {
     toggleCensorship(request.hateSpeechMap, request.toggleState);
     toggleCensorshipRealtime(request.toggleState);
   }
 
-  if(request.action == "toggleHighlighted") {
+  if (request.action === "toggleHighlighted") {
     toggleHighlighted(request.hateSpeechMap, request.toggleState);
   }
 
   if (request.action === "toggleObserver") {
     if (request.enabled) {
-        startObserver();  // Start real-time detection
-        console.log("Real-time mode activated on this tab.");
+      startObserver();  // Start real-time detection
+      console.log("Real-time mode activated on this tab.");
     } else {
-        if (observer) observer.disconnect();  // Stop real-time detection
-        console.log("Real-time mode deactivated on this tab.");
+      if (observer) observer.disconnect();  // Stop real-time detection
+      console.log("Real-time mode deactivated on this tab.");
     }
-}
+  }
 
   if (request.action === "processSentence" && request.sentence) {
-    
+    // Process sentence for hate speech
   }
 
-  if(request.action == "toggleCensorshipRealtime") {
+  if (request.action === "toggleCensorshipRealtime") {
     toggleCensorshipRealtime(request.toggleState);
   }
+
+  // New case for setting the mode
+  if (request.action === "setMode") {
+    console.log(`Setting mode to: ${request.mode}`);
+    currentMode = request.mode; // Assume currentMode is defined elsewhere or define it here
+  }
+
+  // New case for setting the filter type
+  if (request.action === "setFilterType") {
+    console.log(`Setting filter to: ${request.filter}`);
+    if (request.filter === "filterCensorship") {
+      toggleCensorship(hateSpeechMap, true);
+    } else if (request.filter === "filterHighlight") {
+      toggleHighlighted(hateSpeechMap, true);
+    } else if (request.filter === "filterRealTime") {
+      toggleCensorshipRealtime(true);
+    }
+  }
 });
+
 
 function toggleCensorshipRealtime(enable) {
   const elements = document.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]');
