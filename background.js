@@ -183,7 +183,6 @@ async function detectLanguage(sentence) {
 
     const predictions = result;
 
-    // Log the full response to verify language predictions
     console.log("Language detection response:", result);
     console.log("Predictions array:", predictions);
 
