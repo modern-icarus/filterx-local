@@ -7,6 +7,8 @@ const excludedPatterns = [
   "view more comments",
   "come share your findings in the comments",
   "reacted to your message",
+  "Removed due to Hate speech",
+  "removed due to Hate speech",
 
   // Regular expressions
   /^view all \d+ replies$/i,
