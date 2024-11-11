@@ -22,7 +22,8 @@ const excludedPatterns = [
 ];
 
 let observer;
-const loggedSentences = new Set(); // Track logged sentences 
+const loggedSentences = new Set(); // Track processed sentences
+const flaggedSentences = new Set(); // Track flagged sentences
 const censoredText = '<span style="font-style: italic;">Removed due to Hate speech</span>';
 const highlightedText = '<span style="color: red;">';
 const originalTexts = new Map(); // To store original text of each element
@@ -267,53 +268,61 @@ function startObserver() {
 }
 
 function processNodeText(node) {
-  const relevantElements = node.querySelectorAll('div[dir="auto"], span[dir="auto"],span[dir="auto"][role="text"]');
+  const relevantElements = node.querySelectorAll('div[dir="auto"], span[dir="auto"], span[dir="auto"][role="text"]');
 
   relevantElements.forEach(el => {
-      const textContent = el.innerText.trim();
-      if (textContent) {
-          const sentences = extractValidSentencesFromText(textContent);
-          sentences.forEach(sentence => {
-              if (!loggedSentences.has(sentence)) { // Check if sentence is already logged
-                  loggedSentences.add(sentence); // Add to logged sentences set
-                  console.log('Valid sentence extracted:', sentence);
+    const textContent = el.innerText.trim();
+    if (textContent) {
+      const sentences = extractValidSentencesFromText(textContent);
+      sentences.forEach(sentence => {
+        if (flaggedSentences.has(sentence)) {
+          // Apply censorship directly if the sentence is already flagged
+          censorElement(el);
+        } else if (!loggedSentences.has(sentence)) {
+          // If sentence is not logged, process it and flag if needed
+          loggedSentences.add(sentence); // Add to logged sentences set
+          console.log('Valid sentence extracted:', sentence);
 
-                  // Function to send sentence with retry mechanism
-                  function sendSentenceWithRetry(sentence, retries = 0) {
-                      chrome.runtime.sendMessage({ action: "processSentence", sentence }, function(response) {
-                          if (chrome.runtime.lastError) {
-                              console.error("Error receiving response:", chrome.runtime.lastError.message);
-                          } else if (response.status === "error") {
-                              console.log("Response from background script:", response);
-                              // Check for error 503 or other failed responses
-                              if (response.error.includes("503") || response.error.includes("Failed to fetch")) {
-                                  // Retry after 30 seconds
-                                  setTimeout(() => {
-                                      console.log(`Retrying sentence: "${sentence}", Attempt: ${retries + 1}`);
-                                      sendSentenceWithRetry(sentence, retries + 1);
-                                  }, 30000);
-                              } else {
-                                  console.warn("No response received from background script for:", sentence);
-                              }
-                          } else if (response.result === "FLAGGED") {
-                              if (!originalTextsRealtime.has(el)) {
-                                  originalTextsRealtime.set(el, el.innerHTML);
-                              }
-
-                              el.innerHTML = censoredText;
-                          } else {
-                              console.log("Successfully processed sentence:", sentence);
-                          }
-                      });
-                  }
-
-                  // Send the sentence with the retry mechanism
-                  sendSentenceWithRetry(sentence);
-              }
+          // Send the sentence to the background script for processing
+          chrome.runtime.sendMessage({ action: "processSentence", sentence }, function(response) {
+            if (chrome.runtime.lastError) {
+              console.error("Error receiving response:", chrome.runtime.lastError.message);
+            } else if (response.result === "FLAGGED") {
+              // Mark the sentence as flagged and reapply censorship
+              flaggedSentences.add(sentence);
+              applyCensorshipToFlaggedSentences();
+            } else {
+              console.log("Successfully processed sentence:", sentence);
+            }
           });
-      }
+        }
+      });
+    }
   });
 }
+
+function censorElement(el) {
+  if (!originalTextsRealtime.has(el)) {
+    originalTextsRealtime.set(el, el.innerHTML);
+  }
+  el.innerHTML = censoredText;
+}
+
+function applyCensorshipToFlaggedSentences() {
+  // Go through all elements and censor if they contain a flagged sentence
+  const allElements = document.querySelectorAll('div[dir="auto"], span[dir="auto"], span[dir="auto"][role="text"]');
+  allElements.forEach(el => {
+    const textContent = el.innerText.trim();
+    const sentences = extractValidSentencesFromText(textContent);
+    sentences.forEach(sentence => {
+      if (flaggedSentences.has(sentence)) {
+        censorElement(el); // Apply censorship to each element containing a flagged sentence
+      }
+    });
+  });
+}
+
+
 
 
 // Extract valid sentences from a given text
