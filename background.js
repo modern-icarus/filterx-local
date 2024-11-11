@@ -51,7 +51,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Global variable to store real-time toggle state
 let isRealTimeEnabled = false;
-let currentSelectMode = 'moderate'; // Default mode
+let currentSelectMode = 'free'; // Default mode
 let currentFilterType = 'filterRealTime'; // Default filter
 
 function setSelectMode(mode) {
@@ -159,7 +159,7 @@ async function callAPI(url, sentence) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ text: sentence }), // Adjust if your API expects different request structure
+            body: JSON.stringify({ text: sentence }),
         });
 
         if (!response.ok) {
@@ -244,7 +244,7 @@ async function groupByLanguage(sentences) {
 }
 
 
-let currentMode = 'moderate'; // Default to 'free' mode if nothing is set
+let currentMode = 'free'; // Default to 'free' mode if nothing is set
 
 // Listener for receiving mode changes from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -259,14 +259,14 @@ function getModeThreshold() {
 
     switch (currentMode) {
         case 'strict':
-            threshold = 0.6;
+            threshold = 0.65;
             break;
         case 'moderate':
-            threshold = 0.8;
+            threshold = 0.85;
             break;
         case 'free':
         default:
-            threshold = 0.9;
+            threshold = 0.95;
             break;
     }
     return threshold;
