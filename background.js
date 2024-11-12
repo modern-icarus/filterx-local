@@ -196,9 +196,9 @@ async function detectLanguage(sentence) {
 
         // Check if any Filipino language label has a score above the threshold
         const isFilipinoLanguage = predictions.some(pred => 
-            (pred.label === "tgl_Latn" && pred.score > 0.5) || 
-            (pred.label === "ceb_Latn" && pred.score > 0.5) || 
-            (pred.label === "war_Latn" && pred.score > 0.5)
+            (pred.label === "tgl_Latn" && pred.score > 0.01) || 
+            (pred.label === "ceb_Latn" && pred.score > 0.01) || 
+            (pred.label === "war_Latn" && pred.score > 0.01)
         );
 
         // Check if English is detected with a high enough score
@@ -243,7 +243,7 @@ async function groupByLanguage(sentences) {
 }
 
 
-let currentMode = 'free'; // Default to 'free' mode if nothing is set
+let currentMode = 'strict'; // Default to 'free' mode if nothing is set
 
 // Listener for receiving mode changes from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
