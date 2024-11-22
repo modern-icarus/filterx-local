@@ -51,6 +51,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Global variable to store real-time toggle state
 let isRealTimeEnabled = false;
+let currentMode = 'free'; 
 let currentFilterType = 'filterRealTime'; // Default filter
 
 function setSelectMode(mode) {
@@ -244,9 +245,6 @@ async function groupByLanguage(sentences) {
     console.log(englishGroup, tagalogGroup); // This will now show the populated arrays
     return { englishGroup, tagalogGroup };
 }
-
-
-let currentMode = 'moderate'; 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "setMode") {

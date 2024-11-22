@@ -458,12 +458,36 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // Function to toggle the state of the manual scan button
+    function toggleManualScanButton() {
+        if (scanToggle.checked) {
+            scanPageButton.disabled = true; // Disable the button
+        } else {
+            scanPageButton.disabled = false; // Enable the button
+        }
+    }
+
+    // Attach event listener to scanToggle
+    scanToggle.addEventListener("change", toggleManualScanButton);
+
+    // Initialize button state on page load
+    toggleManualScanButton();
+
  
 });
 
 
 // FUNCTIONS HERE
 
+document.getElementById('resultModal').addEventListener('show.bs.modal', function () {
+    this.setAttribute('aria-hidden', 'false');
+});
+
+document.getElementById('resultModal').addEventListener('hide.bs.modal', function () {
+    this.setAttribute('aria-hidden', 'true');
+});
+
+// Reference to scanPageButton and scanToggle already exist
 
 
 // Function to toggle off other checkboxes when one is selected
