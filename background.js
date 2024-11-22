@@ -51,16 +51,18 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Global variable to store real-time toggle state
 let isRealTimeEnabled = false;
-let currentSelectMode = 'free'; // Default mode
 let currentFilterType = 'filterRealTime'; // Default filter
 
 function setSelectMode(mode) {
-    currentSelectMode = mode;
+    currentMode = mode;
+    console.log(`setSelectMode called. Updated currentMode: ${currentMode}`);
+    
+    // Broadcast the updated mode to all tabs
     chrome.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
             if (tab.url && !tab.url.startsWith("chrome://")) {
                 try {
-                    chrome.tabs.sendMessage(tab.id, { action: "setMode", mode: currentSelectMode });
+                    chrome.tabs.sendMessage(tab.id, { action: "setMode", mode: currentMode });
                 } catch (error) {
                     console.warn(`Failed to send setMode message to tab ${tab.id}:`, error);
                 }
@@ -68,6 +70,7 @@ function setSelectMode(mode) {
         });
     });
 }
+
 
 function setFilterType(filter) {
     currentFilterType = filter;
@@ -243,13 +246,13 @@ async function groupByLanguage(sentences) {
 }
 
 
-let currentMode = 'strict'; // Default to 'free' mode if nothing is set
+let currentMode = 'moderate'; 
 
-// Listener for receiving mode changes from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'setMode') {
-        currentMode = message.mode;
-        console.log(`Mode changed to: ${currentMode}`);
+    if (message.action === "setMode") {
+        currentMode = message.mode; // Update the mode
+        console.log(`Mode changed to: ${currentMode}`); // Log the change
+        sendResponse({ status: "success", currentMode }); // Confirm the update
     }
 });
 
@@ -268,28 +271,33 @@ function getModeThreshold() {
             threshold = 0.95;
             break;
     }
+    console.log(`getModeThreshold called. Current mode: ${currentMode}, Threshold: ${threshold}`);
     return threshold;
 }
 
+
+
 async function callHateSpeechAPI(model, sentence) {
     const prediction = await callAPI(model, sentence);
+    const threshold = getModeThreshold(); // Fetch threshold dynamically
 
-    const threshold = getModeThreshold();
-    log(3, `Sentence: "${sentence}"`, `Where API was sent: ${model}`, `API Prediction: ${JSON.stringify(prediction)}`, `Mode Threshold: ${threshold}`);
+    console.log(`Current mode: ${currentMode}, Threshold used: ${threshold}`);
 
-    const flagged = prediction.filter(pred => 
+    const flagged = prediction.filter(pred =>
         (model === ENGLISH_HATE_SPEECH_MODEL && pred.label === "HATE" && pred.score >= threshold) ||
         (model === TAGALOG_HATE_SPEECH_MODEL && pred.label === "LABEL_1" && pred.score >= threshold)
     );
 
     if (flagged.length > 0) {
-        log(3, `Flagged as hate speech:`, JSON.stringify(flagged));
+        console.log(`Flagged as hate speech:`, JSON.stringify(flagged));
         return flagged;
     } else {
-        log(3, `Prediction below threshold (${threshold}). Marked as non-hate speech:`, `Sentence: "${sentence}"`, `Prediction score: ${prediction[0]?.score || 'N/A'}`);
-        return prediction;  // Ensure the prediction is still returned
+        console.log(`Prediction below threshold (${threshold}). Marked as non-hate speech: Sentence: "${sentence}", Prediction score: ${prediction[0]?.score || 'N/A'}`);
+        return prediction; // Return prediction even if not flagged
     }
 }
+
+
 
 
 async function analyzeHateSpeech(englishGroup, tagalogGroup) {

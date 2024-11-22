@@ -309,8 +309,20 @@ document.addEventListener("DOMContentLoaded", function() {
                             case "success":
                                 const predictions = response.predictionResult || [];
                                 if (predictions.length > 0) {
-                                    const { label, score } = predictions[0];
-                                    const isHateSpeech = label === "LABEL_1" ? "hate speech" : "not hate speech";
+                                    // Normalize labels for both models
+                                    const normalizedPredictions = predictions.map(prediction => ({
+                                        label: prediction.label === "LABEL_1" ? "HATE" :
+                                               prediction.label === "LABEL_0" ? "NON_HATE" : prediction.label,
+                                        score: prediction.score
+                                    }));
+        
+                                    // Find the highest confidence prediction
+                                    const highestPrediction = normalizedPredictions.reduce(
+                                        (prev, current) => (prev.score > current.score ? prev : current)
+                                    );
+        
+                                    const { label, score } = highestPrediction;
+                                    const isHateSpeech = label === "HATE" ? "hate speech" : "not hate speech";
                                     const confidence = (score * 100).toFixed(2);
                                     const botMessage = `I am ${confidence}% confident that your sentence is ${isHateSpeech}.`;
                                     displayMessage("bot", botMessage);
@@ -334,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (error) {
             console.error("Error in handleMessage:", error);
             displayMessage("bot", "Sorry, something went wrong.");
-        }
+        }        
     }
 
     displayMessage("bot", startupMessage);
